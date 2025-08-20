@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complex Analysis Visualization</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #e0e0e0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(20, 20, 30, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 100px rgba(102, 126, 234, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+        
+        h1 {
+            background: linear-gradient(135deg, #667eea 0%, #f093fb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 2.5em;
+            text-shadow: 0 0 40px rgba(102, 126, 234, 0.5);
+        }
+        
+        h2 {
+            color: #8b9cff;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            border-bottom: 2px solid rgba(139, 156, 255, 0.3);
+            padding-bottom: 10px;
+        }
+        
+        h3 {
+            color: #a8b9ff;
+            margin-bottom: 15px;
+        }
+        
+        h4 {
+            color: #b8c9ff;
+            margin-bottom: 10px;
+        }
+        
+        p {
+            line-height: 1.6;
+            color: #d0d0d0;
+        }
+        
+        .theorem-box {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border-left: 5px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+        
+        .equation-display {
+            background: rgba(10, 10, 20, 0.9);
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 10px;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5);
+            overflow-x: auto;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+        }
+        
+        .example-box {
+            background: linear-gradient(135deg, rgba(255, 107, 107, 0.1) 0%, rgba(252, 182, 159, 0.1) 100%);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border-left: 5px solid #ff6b6b;
+            border: 1px solid rgba(255, 107, 107, 0.2);
+        }
+        
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .grid-item {
+            background: rgba(30, 30, 45, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+        }
+        
+        .grid-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+        
+        .highlight {
+            background: linear-gradient(90deg, rgba(102, 126, 234, 0.3), rgba(118, 75, 162, 0.3));
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        
+        .note {
+            background: rgba(255, 235, 59, 0.05);
+            border: 1px solid rgba(255, 235, 59, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            font-style: italic;
+            color: #e0e0e0;
+        }
+        
+        .mjx-chtml {
+            font-size: 2.2em !important;
+            color: #e0e0e0 !important;
+        }
+        
+        ul li {
+            color: #d0d0d0;
+        }
+        
+        code {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .container > * {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+        
+        .container > *:nth-child(2) { animation-delay: 0.1s; }
+        .container > *:nth-child(3) { animation-delay: 0.2s; }
+        .container > *:nth-child(4) { animation-delay: 0.3s; }
+        .container > *:nth-child(5) { animation-delay: 0.4s; }
+        
+        /* Special styles for the holomorphic activation sections */
+        .helu-box {
+            background: linear-gradient(135deg, rgba(0, 188, 212, 0.1) 0%, rgba(0, 150, 136, 0.1) 100%);
+            border-left-color: #00acc1;
+        }
+        
+        .swish-box {
+            background: linear-gradient(135deg, rgba(233, 30, 99, 0.1) 0%, rgba(156, 39, 176, 0.1) 100%);
+            border-left-color: #e91e63;
+        }
+        
+        .comparison-grid .grid-item:nth-child(1) {
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.1) 0%, rgba(255, 152, 0, 0.1) 100%);
+        }
+        
+        .comparison-grid .grid-item:nth-child(2) {
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(56, 142, 60, 0.1) 100%);
+        }
+        
+        .comparison-grid .grid-item:nth-child(3) {
+            background: linear-gradient(135deg, rgba(156, 39, 176, 0.1) 0%, rgba(123, 31, 162, 0.1) 100%);
+        }
+        
+        .implementation-box {
+            background: linear-gradient(135deg, rgba(139, 195, 74, 0.1) 0%, rgba(76, 175, 80, 0.1) 100%);
+            margin-top: 30px;
+        }
+        
+        .code-block {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Complex Analysis: Holomorphic Functions & Beyond</h1>
+        
+        <div class="theorem-box">
+            <h3>Core Definition: Holomorphic Functions</h3>
+            <p>A complex function \(f: \Omega \to \mathbb{C}\) is <span class="highlight">holomorphic</span> on an open subset \(\Omega \subseteq \mathbb{C}\) if it is complex differentiable at every point in \(\Omega\).</p>
+            <div class="equation-display">
+                $$f'(z_0) = \lim_{h \to 0} \frac{f(z_0 + h) - f(z_0)}{h}$$
+            </div>
+            <p>This limit must exist and be the same regardless of the direction from which \(h\) approaches zero in the complex plane.</p>
+        </div>
+        
+        <h2>The Cauchy-Riemann Equations</h2>
+        
+        <p>For a complex function \(f(z) = u(x,y) + iv(x,y)\) where \(z = x + iy\), the function is holomorphic if and only if it satisfies the <strong>Cauchy-Riemann equations</strong>:</p>
+        
+        <div class="equation-display">
+            $$\boxed{\frac{\partial u}{\partial x} = \frac{\partial v}{\partial y} \quad \text{and} \quad \frac{\partial u}{\partial y} = -\frac{\partial v}{\partial x}}$$
+        </div>
+        
+        <div class="grid-container">
+            <div class="grid-item">
+                <h3>Why These Equations?</h3>
+                <p>Approaching the derivative along the real axis:</p>
+                $$f'(z_0) = \frac{\partial u}{\partial x} + i\frac{\partial v}{\partial x}$$
+            </div>
+            <div class="grid-item">
+                <h3>From the Imaginary Axis</h3>
+                <p>Approaching along the imaginary axis:</p>
+                $$f'(z_0) = \frac{\partial v}{\partial y} - i\frac{\partial u}{\partial y}$$
+            </div>
+        </div>
+        
+        <div class="example-box">
+            <h3>Example: \(f(z) = z^2\)</h3>
+            <p>Let's verify that \(f(z) = z^2 = (x+iy)^2 = x^2 - y^2 + 2ixy\) is holomorphic:</p>
+            <ul style="list-style: none; padding-left: 0;">
+                <li>• \(u(x,y) = x^2 - y^2\), \(v(x,y) = 2xy\)</li>
+                <li>• \(\frac{\partial u}{\partial x} = 2x\), \(\frac{\partial v}{\partial y} = 2x\) ✓</li>
+                <li>• \(\frac{\partial u}{\partial y} = -2y\), \(-\frac{\partial v}{\partial x} = -2y\) ✓</li>
+            </ul>
+        </div>
+        
+        <h2>Euler's Formula & Geometric Interpretation</h2>
+        
+        <div class="theorem-box">
+            <h3>Euler's Identity</h3>
+            <div class="equation-display">
+                $$e^{i\theta} = \cos(\theta) + i\sin(\theta)$$
+            </div>
+            <p>This formula reveals that multiplication by \(e^{i\theta}\) represents a rotation by angle \(\theta\) in the complex plane.</p>
+        </div>
+        
+        <p>The connection to holomorphic functions: Complex differentiability requires that locally, the function acts as a <span class="highlight">scaled rotation</span>. If \(f'(z_0) = re^{i\phi}\), then near \(z_0\):</p>
+        
+        <div class="equation-display">
+            $$f(z) \approx f(z_0) + re^{i\phi}(z - z_0)$$
+        </div>
+        
+        <h2>Remarkable Properties of Holomorphic Functions</h2>
+        
+        <div class="grid-container">
+            <div class="grid-item">
+                <h3>🔄 Infinite Differentiability</h3>
+                <p>If \(f\) is holomorphic once in a region, it's automatically infinitely differentiable there!</p>
+                <div class="equation-display">
+                    $$f^{(n)}(z) \text{ exists } \forall n \in \mathbb{N}$$
+                </div>
+            </div>
+            <div class="grid-item">
+                <h3>🎯 Analytic Representation</h3>
+                <p>Holomorphic functions can be represented by convergent power series:</p>
+                <div class="equation-display">
+                    $$f(z) = \sum_{n=0}^{\infty} a_n(z-z_0)^n$$
+                </div>
+            </div>
+            <div class="grid-item">
+                <h3>🌊 Conformal Mapping</h3>
+                <p>Holomorphic functions preserve angles and infinitesimally preserve shapes (where \(f'(z) \neq 0\)).</p>
+            </div>
+            <div class="grid-item">
+                <h3>⚡ Maximum Principle</h3>
+                <p>A non-constant holomorphic function cannot attain its maximum inside its domain.</p>
+            </div>
+        </div>
+        
+        <h2>Neural Phasor Networks Connection</h2>
+        
+        <div class="note">
+            <strong>Modern Application:</strong> Neural phasor networks leverage complex-valued computations where activations exist in the complex plane. The Wirtinger calculus enables backpropagation through non-holomorphic activation functions.
+        </div>
+        
+        <div class="theorem-box">
+            <h3>Wirtinger Derivatives</h3>
+            <p>For non-holomorphic functions in neural networks, we use:</p>
+            <div class="equation-display">
+                $$\frac{\partial f}{\partial z} = \frac{1}{2}\left(\frac{\partial f}{\partial x} - i\frac{\partial f}{\partial y}\right)$$
+                $$\frac{\partial f}{\partial z^*} = \frac{1}{2}\left(\frac{\partial f}{\partial x} + i\frac{\partial f}{\partial y}\right)$$
+            </div>
+        </div>
+        
+        <h2>Complex Neural ODE Formulation</h2>
+        
+        <p>In the context of Neural ODEs with complex values:</p>
+        
+        <div class="equation-display">
+            $$\frac{dz(t)}{dt} = f_\theta(z(t), z^*(t), t)$$
+        </div>
+        
+        <p>This formulation allows modeling of continuous-time dynamics in complex phase space, potentially capturing oscillatory and periodic behaviors naturally.</p>
+        
+        <div class="example-box">
+            <h3>Activation Functions for Complex Networks</h3>
+            <ul style="list-style: none; padding-left: 0;">
+                <li><strong>CReLU:</strong> \(f(z) = \text{ReLU}(\text{Re}(z)) + i \cdot \text{ReLU}(\text{Im}(z))\)</li>
+                <li><strong>ModReLU:</strong> \(f(z) = \text{ReLU}(|z| + b) \cdot \frac{z}{|z|}\) (preserves phase)</li>
+                <li><strong>Complex Tanh:</strong> \(f(z) = \tanh(z)\) (fully complex processing)</li>
+            </ul>
+        </div>
+        
+        <h2>Novel Holomorphic Activation Functions</h2>
+        
+        <div class="theorem-box helu-box">
+            <h3>🌟 Holomorphic Complex ELU</h3>
+            <p>A fully holomorphic variant of the Exponential Linear Unit that maintains complex differentiability everywhere:</p>
+            <div class="equation-display">
+                $$f_{\mathrm{H{\text -}ELU}}(z) = \begin{cases}
+                z & \text{if } \mathrm{Re}(z) > 0 \\
+                \alpha(e^z - 1) & \text{if } \mathrm{Re}(z) \leq 0
+                \end{cases}$$
+            </div>
+            <p>For complex \(z = x + iy\):</p>
+            <ul style="list-style: none; padding-left: 20px;">
+                <li>• <strong>Positive real part:</strong> Identity mapping preserves both magnitude and phase</li>
+                <li>• <strong>Negative real part:</strong> Smooth exponential transition with \(\alpha(e^{x+iy} - 1) = \alpha e^x(\cos y + i\sin y) - \alpha\)</li>
+                <li>• <strong>Key property:</strong> Unlike ModReLU, this doesn't break holomorphicity by taking absolute values</li>
+                <li>• <strong>Gradient flow:</strong> \(f'(z) = 1\) for \(\mathrm{Re}(z) > 0\), and \(f'(z) = \alpha e^z\) for \(\mathrm{Re}(z) \leq 0\)</li>
+            </ul>
+            <div class="note">
+                <strong>Implementation insight:</strong> The condition on \(\mathrm{Re}(z)\) only (not \(|z|\)) preserves the holomorphic structure while providing similar gating behavior to ModReLU.
+            </div>
+        </div>
+        
+        <div class="theorem-box swish-box">
+            <h3>🎯 Holomorphic Complex Swish</h3>
+            <p>A smooth, self-gated activation function that remains holomorphic throughout the complex plane:</p>
+            <div class="equation-display">
+                $$f_{\mathrm{H{\text -}Swish}}(z) = z \cdot \sigma(\beta z) = \frac{z}{1 + e^{-\beta z}}$$
+            </div>
+            <p>where \(\sigma\) is the complex sigmoid function.</p>
+            
+            <div class="grid-container" style="margin-top: 20px;">
+                <div class="grid-item">
+                    <h4>Mathematical Properties</h4>
+                    <p>The complex sigmoid extends naturally:</p>
+                    $$\sigma(z) = \frac{1}{1 + e^{-z}} = \frac{e^z}{e^z + 1}$$
+                    <p style="margin-top: 10px;">This is holomorphic everywhere except at the poles where \(e^z = -1\)</p>
+                </div>
+                <div class="grid-item">
+                    <h4>Gradient Computation</h4>
+                    <p>The derivative maintains elegant form:</p>
+                    $$f'(z) = \sigma(\beta z) + \beta z \sigma(\beta z)(1 - \sigma(\beta z))$$
+                    <p style="margin-top: 10px;">Smooth gradient flow without vanishing/exploding issues</p>
+                </div>
+            </div>
+            
+            <div class="note">
+                <strong>Advantages over ModReLU:</strong>
+                <ul style="margin-left: 20px; margin-top: 10px;">
+                    <li>• Fully differentiable with no kinks or discontinuities</li>
+                    <li>• Self-gating mechanism naturally modulates both magnitude and phase</li>
+                    <li>• Parameter \(\beta\) controls the sharpness of the gating transition</li>
+                    <li>• No explicit magnitude computation (no \(|z|\)) preserves holomorphicity</li>
+                </ul>
+            </div>
+        </div>
+        
+        <h2>Comparison of Holomorphic Activations</h2>
+        
+        <div class="grid-container comparison-grid">
+            <div class="grid-item">
+                <h3>Traditional Approaches</h3>
+                <p><strong>CReLU/ModReLU:</strong></p>
+                <ul style="font-size: 0.9em;">
+                    <li>• Break holomorphicity</li>
+                    <li>• Require Wirtinger calculus</li>
+                    <li>• Separate real/imaginary or magnitude/phase</li>
+                </ul>
+            </div>
+            <div class="grid-item">
+                <h3>Holomorphic H-ELU</h3>
+                <p><strong>Advantages:</strong></p>
+                <ul style="font-size: 0.9em;">
+                    <li>• Maintains holomorphicity</li>
+                    <li>• Simple piecewise structure</li>
+                    <li>• Exponential saturation for negative Re(z)</li>
+                </ul>
+            </div>
+            <div class="grid-item">
+                <h3>Holomorphic H-Swish</h3>
+                <p><strong>Advantages:</strong></p>
+                <ul style="font-size: 0.9em;">
+                    <li>• Smooth everywhere</li>
+                    <li>• Self-gating mechanism</li>
+                    <li>• Tunable with β parameter</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="example-box implementation-box">
+            <h3>JAX Implementation Notes</h3>
+            <div class="code-block">
+                <p><strong>Holomorphic ELU:</strong></p>
+                <code style="color: #4db6ac;">
+                condition = z.real > 0<br>
+                jnp.where(condition, z, alpha * (jnp.exp(z) - 1))
+                </code>
+                <p style="margin-top: 15px;"><strong>Holomorphic Swish:</strong></p>
+                <code style="color: #64b5f6;">
+                z * jax.nn.sigmoid(beta * z)
+                </code>
+            </div>
+            <p style="margin-top: 15px; font-style: italic;">Both functions leverage JAX's native complex number support and automatic differentiation with holomorphic=True flag for optimal performance.</p>
+        </div>
+        
+        <h2>Complex Neural ODEs & Fourier Neural ODEs</h2>
+        
+        <div class="theorem-box" style="background: linear-gradient(135deg, rgba(255, 152, 0, 0.1) 0%, rgba(255, 87, 34, 0.1) 100%); border-left-color: #ff9800;">
+            <h3>🌊 Complex Neural ODEs</h3>
+            <p>Complex Neural ODEs extend the standard NODE framework to complex-valued state spaces, enabling natural modeling of oscillatory and wave-like phenomena:</p>
+            
+            <div class="equation-display">
+                $$\frac{dz(t)}{dt} = f_\theta(z(t), z^*(t), t), \quad z(0) = z_0 \in \mathbb{C}^n$$
+            </div>
+            
+            <p>Where \(f_\theta\) maps from \(\mathbb{C}^n \times \mathbb{C}^n \times \mathbb{R}\) to \(\mathbb{C}^n\) and is parameterized by a complex neural network.</p>
+            
+            <div class="grid-container" style="margin-top: 20px;">
+                <div class="grid-item">
+                    <h4>Key Advantages</h4>
+                    <ul style="font-size: 0.9em;">
+                        <li>• Natural representation of periodic/oscillatory dynamics</li>
+                        <li>• Phase and magnitude evolve jointly</li>
+                        <li>• Parameter efficiency (up to 224x reduction)</li>
+                        <li>• Preserves geometric structure in phase space</li>
+                    </ul>
+                </div>
+                <div class="grid-item">
+                    <h4>Implementation in JAX</h4>
+                    <div style="background: rgba(0, 0, 0, 0.7); padding: 10px; border-radius: 5px; margin-top: 10px;">
+                        <code style="color: #81c784; font-size: 0.85em;">
+                        def complex_ode_fn(z, t, params):<br>
+                        &nbsp;&nbsp;z_real = z.real<br>
+                        &nbsp;&nbsp;z_imag = z.imag<br>
+                        &nbsp;&nbsp;z_conj = jnp.conj(z)<br>
+                        &nbsp;&nbsp;return network(z, z_conj, t, params)
+                        </code>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="note" style="margin-top: 15px;">
+                <strong>Holomorphic Integration:</strong> When using holomorphic activation functions (H-ELU, H-Swish), the ODE preserves complex differentiability throughout the evolution, potentially enabling more stable long-term integration.
+            </div>
+        </div>
+        
+        <div class="theorem-box" style="background: linear-gradient(135deg, rgba(3, 169, 244, 0.1) 0%, rgba(0, 188, 212, 0.1) 100%); border-left-color: #03a9f4;">
+            <h3>🔄 Fourier Neural ODEs (FNODEs)</h3>
+            <p>FNODEs leverage Fourier analysis for gradient estimation, enabling simulation-free training by directly matching vector fields in frequency space:</p>
+            
+            <div class="equation-display">
+                $$\mathcal{L} = \frac{1}{N} \sum_{n=0}^{N-1} \left\| \hat{s}^{\prime}(t_n) - f_\theta[s(t_n), u(t_n), \nabla_x s(t_n), \ldots] \right\|$$
+            </div>
+            
+            <p>Where the temporal gradient is estimated via Fourier transform:</p>
+            <div class="equation-display">
+                $$\hat{s}^{\prime}(t_n) = \frac{1}{N} \sum_{k=0}^{K} i\frac{2\pi k}{T} \tilde{s}_k e^{i\frac{2\pi k}{N}n}$$
+            </div>
+            
+            <h4 style="margin-top: 20px; color: #64b5f6;">Key Innovations</h4>
+            <div class="grid-container">
+                <div class="grid-item" style="background: rgba(3, 169, 244, 0.05);">
+                    <h5>Gradient Flow Matching</h5>
+                    <p>Directly match temporal gradients estimated from Fourier analysis, avoiding expensive ODE solves during training:</p>
+                    <div class="equation-display">
+                        $$\tilde{s}_k = \mathcal{F}(s)_k = \sum_{n=0}^{N-1} s_n e^{-i\frac{2\pi nk}{N}}$$
+                    </div>
+                </div>
+                <div class="grid-item" style="background: rgba(0, 188, 212, 0.05);">
+                    <h5>Spatial Gradient Estimation</h5>
+                    <p>For PDEs, estimate spatial derivatives via Fourier methods:</p>
+                    <div class="equation-display">
+                        $$\frac{\partial^{p+q} s}{\partial x^p \partial y^q} = \mathcal{F}^{-1}[(ik_x)^p(ik_y)^q \mathcal{F}(s)]$$
+                    </div>
+                </div>
+                <div class="grid-item" style="background: rgba(0, 150, 136, 0.05);">
+                    <h5>Data Augmentation Loop</h5>
+                    <p>Generate synthetic data via forward integration, then retrain with higher frequency resolution:</p>
+                    <p style="font-size: 0.85em; margin-top: 5px;">Train → Generate → Increase K → Retrain</p>
+                </div>
+            </div>
+            
+            <h4 style="margin-top: 20px; color: #00bcd4;">Performance Advantages</h4>
+            <ul>
+                <li><strong>10x+ faster training</strong> compared to standard NODEs (no backprop through ODE solver)</li>
+                <li><strong>Superior noise robustness</strong> due to Fourier smoothing properties</li>
+                <li><strong>Resolution-invariant</strong> modeling capabilities</li>
+                <li><strong>Handles irregular sampling</strong> via NFFT (Nonuniform FFT)</li>
+            </ul>
+        </div>
+        
+        <h2>Synergy: Complex FNODEs for HoloNet</h2>
+        
+        <div class="theorem-box" style="background: linear-gradient(135deg, rgba(103, 58, 183, 0.1) 0%, rgba(63, 81, 181, 0.1) 100%); border-left-color: #673ab7;">
+            <h3>⚡ Combining Complex & Fourier Neural ODEs</h3>
+            <p>The fusion of complex-valued networks with Fourier-based training creates a powerful framework for phasor-based neural dynamics:</p>
+            
+            <div class="equation-display">
+                $$\frac{dz(t)}{dt} = f_\theta^{\mathrm{HoloNet}}(z(t), z^*(t), t) \approx \mathcal{F}^{-1}\left[i\omega \cdot \mathcal{F}[z(t)]\right]$$
+            </div>
+            
+            <div class="grid-container" style="margin-top: 20px;">
+                <div class="grid-item" style="background: rgba(103, 58, 183, 0.05);">
+                    <h4>Phasor Representation</h4>
+                    <p>State evolution in frequency domain:</p>
+                    <div class="equation-display">
+                        $$z(t) = \sum_k A_k e^{i(\omega_k t + \phi_k)}$$
+                    </div>
+                    <p style="margin-top: 10px;">Natural for oscillatory systems, signal processing, quantum dynamics</p>
+                </div>
+                <div class="grid-item" style="background: rgba(63, 81, 181, 0.05);">
+                    <h4>Holomorphic Fourier Networks</h4>
+                    <p>Preserve complex differentiability while leveraging frequency-domain training:</p>
+                    <ul style="font-size: 0.85em; margin-top: 10px;">
+                        <li>• H-ELU/H-Swish maintain holomorphicity</li>
+                        <li>• Fourier gradients preserve phase relationships</li>
+                        <li>• No magnitude drift through layers</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="example-box" style="background: linear-gradient(135deg, rgba(255, 193, 7, 0.1) 0%, rgba(255, 152, 0, 0.1) 100%); margin-top: 20px;">
+                <h4>HoloNet Architecture Blueprint</h4>
+                <div class="code-block">
+                    <code style="color: #ffd54f;">
+                    class HoloNet(nn.Module):<br>
+                    &nbsp;&nbsp;"""Complex Neural ODE with Fourier training & holomorphic activations"""<br>
+                    &nbsp;&nbsp;<br>
+                    &nbsp;&nbsp;def setup(self):<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;self.layers = [ComplexLinear(64, dtype=complex64) for _ in range(depth)]<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;self.activation = holomorphic_swish  # or holomorphic_elu<br>
+                    &nbsp;&nbsp;<br>
+                    &nbsp;&nbsp;def __call__(self, z, z_conj, t):<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;# Forward through complex layers with holomorphic activations<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;for layer in self.layers:<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;z = self.activation(layer(jnp.concatenate([z, z_conj])))<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;return z<br>
+                    &nbsp;&nbsp;<br>
+                    &nbsp;&nbsp;def fourier_gradient_match(self, data, K):<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;# Estimate gradients via FFT<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;z_fourier = jnp.fft.fft(data, axis=0)<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;freq = jnp.fft.fftfreq(len(data)) * 2j * jnp.pi<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;dz_dt_estimate = jnp.fft.ifft(freq[:K] * z_fourier[:K])<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;return dz_dt_estimate
+                    </code>
+                </div>
+            </div>
+            
+            <div class="note" style="margin-top: 20px;">
+                <strong>Research Opportunity:</strong> This combination of holomorphic activations + complex ODEs + Fourier training represents unexplored territory with potential for breakthrough performance in modeling complex dynamical systems, particularly those with inherent oscillatory or wave-like behavior.
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Ensure MathJax processes the content
+        window.MathJax = {
+            tex: {
+                inlineMath: [['\\(', '\\)']],
+                displayMath: [['\\[', '\\]'], ['$$', '$$']],
+                processEscapes: true
+            }
+        };
+    </script>
+</body>
+</html>
